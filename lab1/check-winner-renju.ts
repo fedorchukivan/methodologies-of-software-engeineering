@@ -7,11 +7,13 @@ const resultIndex = {
 }
 
 export default function checkForWinner(fieldState: number[][]) {
-  return checkForVerticalLineOf5(fieldState) ||
-         checkForHorizontalLineOf5(fieldState) ||
-         checkForMainDiagonalLineOf5(fieldState) ||
-         checkForSideDiagonalLineOf5(fieldState) ||
-         [0];
+  return (
+    checkForVerticalLineOf5(fieldState) ||
+    checkForHorizontalLineOf5(fieldState) ||
+    checkForMainDiagonalLineOf5(fieldState) ||
+    checkForSideDiagonalLineOf5(fieldState) ||
+    [0]
+  );
 }
 
 function checkForVerticalLineOf5(fieldState: number[][]): CheckingResult {
