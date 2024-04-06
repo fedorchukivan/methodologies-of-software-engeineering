@@ -1,5 +1,3 @@
-type CheckingResult = number[] | false;
-
 const resultIndex = {
   color: 0,
   row: 1,
@@ -9,51 +7,66 @@ const resultIndex = {
 const winningLineLength = 5
 
 export default function checkForWinner(fieldState: number[][]) {
-  return (
-    checkForVerticalWinningLine(fieldState) ||
-    checkForHorizontalWinningLine(fieldState) ||
-    checkForMainDiagonalWinningLine(fieldState) ||
-    checkForSideDiagonalWinningLine(fieldState) ||
-    [0]
-  );
+  let res = [0];
+  const waysToCheckWinner = [
+    checkForVerticalWinningLine,
+    checkForHorizontalWinningLine,
+    checkForMainDiagonalWinningLine,
+    checkForSideDiagonalWinningLine
+  ];
+
+  waysToCheckWinner.some(wayToWin => {
+    const result = wayToWin(fieldState);
+    if (checkResult(result)) {
+      res = result;
+      return true;
+    }
+    return false;
+  });
+
+  return res;
 }
 
-function checkForVerticalWinningLine(fieldState: number[][]): CheckingResult {
-  let res: CheckingResult = false;
+function checkResult(result: number[]) {
+  return result.length > 0 ? result : false;
+}
+
+function checkForVerticalWinningLine(fieldState: number[][]) {
+  let res: number[] = [];
 
   fieldState[0].some((_, column_n) => {
     res = checkForWinningLine(fieldState.map(row => row[column_n]));
 
-    if (res !== false) {
+    if (res.length > 0) {
       res[resultIndex.row] += 1;
       res[resultIndex.column] = column_n+1;
     }
 
-    return res !== false;
+    return res.length > 0;
   });
 
   return res;
 }
 
-function checkForHorizontalWinningLine(fieldState: number[][]): CheckingResult {
-  let res: CheckingResult = false;
+function checkForHorizontalWinningLine(fieldState: number[][]) {
+  let res: number[] = [];
   
   fieldState.some((row, row_n) => {
     res = checkForWinningLine(row);
 
-    if (res !== false) {
+    if (res.length > 0) {
       res.splice(resultIndex.row, 0, row_n+1);
       res[resultIndex.column] += 1;
     }
 
-    return res !== false;
+    return res.length > 0;
   });
 
   return res;
 }
 
-function checkForMainDiagonalWinningLine(fieldState: number[][]): CheckingResult {
-  let res: CheckingResult = false;
+function checkForMainDiagonalWinningLine(fieldState: number[][]) {
+  let res: number[] = [];
 
   fieldState.some((_, row_n) => {
     if (row_n+1 < winningLineLength) {
@@ -71,16 +84,16 @@ function checkForMainDiagonalWinningLine(fieldState: number[][]): CheckingResult
 
     res = checkForWinningLine(diagonal);
 
-    if (res !== false) {
+    if (res.length > 0) {
       res.splice(resultIndex.row, 0, 0);
       res[resultIndex.row] = (row_n - res[resultIndex.column]) + 1;
       res[resultIndex.column] += 1;
     }
 
-    return res !== false;
+    return res.length > 0;
   });
 
-  if (res !== false) {
+  if (res.length > 0) {
     return res;
   }
   
@@ -105,19 +118,19 @@ function checkForMainDiagonalWinningLine(fieldState: number[][]): CheckingResult
 
     res = checkForWinningLine(diagonal);
 
-    if (res !== false) {
+    if (res.length > 0) {
       res[resultIndex.column] = column_n + res[resultIndex.row] + 1;
       res[resultIndex.row] = fieldState.length - res[resultIndex.row];
     }
 
-    return res !== false;
+    return res.length > 0;
   });
   
   return res;
 }
 
-function checkForSideDiagonalWinningLine(fieldState: number[][]): CheckingResult {
-  let res: CheckingResult = false;
+function checkForSideDiagonalWinningLine(fieldState: number[][]) {
+  let res: number[] = [];
 
   fieldState.some((_, row_n) => {
     if (row_n + winningLineLength > fieldState.length) {
@@ -135,16 +148,16 @@ function checkForSideDiagonalWinningLine(fieldState: number[][]): CheckingResult
 
     res = checkForWinningLine(diagonal);
 
-    if (res !== false) {
+    if (res.length > 0) {
       res.splice(resultIndex.row, 0, 0);
       res[resultIndex.column] += 1;
       res[resultIndex.row] = row_n + res[resultIndex.column];
     }
 
-    return res !== false;
+    return res.length > 0;
   });
 
-  if (res !== false) {
+  if (res.length > 0) {
     return res;
   }
   
@@ -168,19 +181,19 @@ function checkForSideDiagonalWinningLine(fieldState: number[][]): CheckingResult
 
     res = checkForWinningLine(diagonal);
 
-    if (res !== false) {
+    if (res.length > 0) {
       res[resultIndex.row] += 1;
       res[resultIndex.column] = column_n + res[resultIndex.row];
     }
 
-    return res !== false;
+    return res.length > 0;
   });
   
   return res;
 }
 
-function checkForWinningLine(colors: number[]): CheckingResult {
-  let res: CheckingResult = false;
+function checkForWinningLine(colors: number[]) {
+  let res: number[] = [];
   const counter = {
     color: 0,
     times: 0,
@@ -206,7 +219,7 @@ function checkForWinningLine(colors: number[]): CheckingResult {
       res = [counter.color, counter.start];
     }
 
-    return res !== false;
+    return res.length > 0;
   });
 
   return res;
