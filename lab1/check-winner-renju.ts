@@ -6,21 +6,23 @@ const resultIndex = {
   column: 2
 }
 
+const winningLineLength = 5
+
 export default function checkForWinner(fieldState: number[][]) {
   return (
-    checkForVerticalLineOf5(fieldState) ||
-    checkForHorizontalLineOf5(fieldState) ||
-    checkForMainDiagonalLineOf5(fieldState) ||
-    checkForSideDiagonalLineOf5(fieldState) ||
+    checkForVerticalWinningLine(fieldState) ||
+    checkForHorizontalWinningLine(fieldState) ||
+    checkForMainDiagonalWinningLine(fieldState) ||
+    checkForSideDiagonalWinningLine(fieldState) ||
     [0]
   );
 }
 
-function checkForVerticalLineOf5(fieldState: number[][]): CheckingResult {
+function checkForVerticalWinningLine(fieldState: number[][]): CheckingResult {
   let res: CheckingResult = false;
 
   fieldState[0].some((_, column_n) => {
-    res = checkForLineOf5(fieldState.map(row => row[column_n]));
+    res = checkForWinningLine(fieldState.map(row => row[column_n]));
 
     if (res !== false) {
       res[resultIndex.row] += 1;
@@ -33,11 +35,11 @@ function checkForVerticalLineOf5(fieldState: number[][]): CheckingResult {
   return res;
 }
 
-function checkForHorizontalLineOf5(fieldState: number[][]): CheckingResult {
+function checkForHorizontalWinningLine(fieldState: number[][]): CheckingResult {
   let res: CheckingResult = false;
   
   fieldState.some((row, row_n) => {
-    res = checkForLineOf5(row);
+    res = checkForWinningLine(row);
 
     if (res !== false) {
       res.splice(resultIndex.row, 0, row_n+1);
@@ -50,11 +52,11 @@ function checkForHorizontalLineOf5(fieldState: number[][]): CheckingResult {
   return res;
 }
 
-function checkForMainDiagonalLineOf5(fieldState: number[][]): CheckingResult {
+function checkForMainDiagonalWinningLine(fieldState: number[][]): CheckingResult {
   let res: CheckingResult = false;
 
   fieldState.some((_, row_n) => {
-    if (row_n < 4) {
+    if (row_n+1 < winningLineLength) {
       return false;
     }
 
@@ -67,7 +69,7 @@ function checkForMainDiagonalLineOf5(fieldState: number[][]): CheckingResult {
       return true;
     });
 
-    res = checkForLineOf5(diagonal);
+    res = checkForWinningLine(diagonal);
 
     if (res !== false) {
       res.splice(resultIndex.row, 0, 0);
@@ -83,7 +85,7 @@ function checkForMainDiagonalLineOf5(fieldState: number[][]): CheckingResult {
   }
   
   fieldState[0].some((_, column_n) => {
-    if (column_n + 4 >= fieldState[0].length) {
+    if (column_n + winningLineLength > fieldState[0].length) {
       return true;
     }
 
@@ -101,7 +103,7 @@ function checkForMainDiagonalLineOf5(fieldState: number[][]): CheckingResult {
       return true;
     });
 
-    res = checkForLineOf5(diagonal);
+    res = checkForWinningLine(diagonal);
 
     if (res !== false) {
       res[resultIndex.column] = column_n + res[resultIndex.row] + 1;
@@ -114,11 +116,11 @@ function checkForMainDiagonalLineOf5(fieldState: number[][]): CheckingResult {
   return res;
 }
 
-function checkForSideDiagonalLineOf5(fieldState: number[][]): CheckingResult {
+function checkForSideDiagonalWinningLine(fieldState: number[][]): CheckingResult {
   let res: CheckingResult = false;
 
   fieldState.some((_, row_n) => {
-    if (row_n + 4 >= fieldState.length) {
+    if (row_n + winningLineLength > fieldState.length) {
       return true;
     }
 
@@ -131,7 +133,7 @@ function checkForSideDiagonalLineOf5(fieldState: number[][]): CheckingResult {
       return true;
     });
 
-    res = checkForLineOf5(diagonal);
+    res = checkForWinningLine(diagonal);
 
     if (res !== false) {
       res.splice(resultIndex.row, 0, 0);
@@ -147,7 +149,7 @@ function checkForSideDiagonalLineOf5(fieldState: number[][]): CheckingResult {
   }
   
   fieldState[0].some((_, column_n) => {
-    if (column_n + 4 >= fieldState[0].length) {
+    if (column_n + winningLineLength > fieldState[0].length) {
       return true;
     }
 
@@ -164,7 +166,7 @@ function checkForSideDiagonalLineOf5(fieldState: number[][]): CheckingResult {
       return true;
     });
 
-    res = checkForLineOf5(diagonal);
+    res = checkForWinningLine(diagonal);
 
     if (res !== false) {
       res[resultIndex.row] += 1;
@@ -177,7 +179,7 @@ function checkForSideDiagonalLineOf5(fieldState: number[][]): CheckingResult {
   return res;
 }
 
-function checkForLineOf5(colors: number[]): CheckingResult {
+function checkForWinningLine(colors: number[]): CheckingResult {
   let res: CheckingResult = false;
   const counter = {
     color: 0,
@@ -188,7 +190,7 @@ function checkForLineOf5(colors: number[]): CheckingResult {
   colors.some((color, index) => {
     if (color === counter.color) {
       counter.times++;
-    } else if (counter.color !== 0 && counter.times === 5) {
+    } else if (counter.color !== 0 && counter.times === winningLineLength) {
       res = [counter.color, counter.start];
     } else {
       counter.color = color;
@@ -199,7 +201,7 @@ function checkForLineOf5(colors: number[]): CheckingResult {
     if (
         index === colors.length-1 &&
         counter.color !== 0 &&
-        counter.times === 5
+        counter.times === winningLineLength
        ) {
       res = [counter.color, counter.start];
     }
