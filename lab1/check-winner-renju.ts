@@ -87,6 +87,10 @@ function checkForMainDiagonalLineOf5(fieldState: number[][]): CheckingResult {
       return true;
     }
 
+    if (column_n === 0) {
+      return false;
+    }
+
     const diagonal: number[] = [];
     fieldState.every((_, row_index) => {
       const row_n = fieldState.length-1 - row_index;
@@ -145,6 +149,10 @@ function checkForSideDiagonalLineOf5(fieldState: number[][]): CheckingResult {
   fieldState[0].some((_, column_n) => {
     if (column_n + 4 >= fieldState[0].length) {
       return true;
+    }
+
+    if (column_n === 0) {
+      return false;
     }
 
     const diagonal: number[] = [];
